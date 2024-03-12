@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package travix.protobuf.catalog;
+
+import "proto/base.proto";
+
+option go_package = "github.com/xivart/travix-catalog-api/v2/pkg/pb";
+
+message Domain {
+  string alias = 1;
+  string description = 2;
+  string id = 3;
+  string name = 4;
+  string owner = 5;
+  repeated Reference references = 6;
+  string source = 7;
+}

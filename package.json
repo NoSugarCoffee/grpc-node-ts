@@ -4,24 +4,30 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/server/index.ts --watch src/server",
-    "start:client": "nodemon src/client/index.ts --watch src/client",
+    "tsc": "tsc",
+    "server": "node build/server/index.js --watch src/server",
+    "client": "node build/client/index.js --watch src/client",
     "proto:build": "cd proto; buf build; cd ..",
     "codegen:buf": "cd proto; buf generate; cd .."
   },
   "keywords": [],
+  "type": "module",
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^16.9.4",
-    "grpc-tools": "^1.11.2",
     "grpc_tools_node_protoc_ts": "^5.3.2",
+    "grpc-tools": "^1.11.2",
     "nodemon": "^2.0.12",
     "prettier": "^2.4.1",
     "typescript": "^4.4.3"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.3.7",
-    "ts-node": "^10.9.1"
+    "google-proto-files": "^4.1.0",
+    "nice-grpc": "^2.1.8",
+    "protoc-gen-js": "^3.21.2",
+    "ts-node": "^10.9.1",
+    "ts-proto": "^1.168.0"
   }
 }

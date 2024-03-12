@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package travix.protobuf.catalog;
+
+import "google/api/annotations.proto";
+import "proto/base.proto";
+import "gotf.proto";
+
+option go_package = "github.com/xivart/travix-catalog-api/v2/pkg/pb";
+
+message RepoAccess {
+  string id = 1;
+  string permission = 2;
+  string project_id = 3;
+}
+
+message RepoAccesses{
+  option (gotf.datasource) = {
+    client: "RepoAccessServiceClient"
+  };
+  repeated RepoAccess accesses = 1;
+  string repository = 2 [(gotf.attribute) = {must_be: Optional}];
+  string environment = 3 [(gotf.attribute) = {must_be: Optional}];
+  string id = 5; // required for terraform ACC tests
+}
+
+service RepoAccessService {
+  rpc ListRepoAccess(ListRepoAccessRequest) returns (ListRepoAccessResponse) {
+    option (google.api.http) = {
+      get: "/repo-accesses"
+    };
+  }
+}
+
+message ListRepoAccessRequest {
+  optional string environment = 1;
+  optional string repository = 2;
+}
+
+message ListRepoAccessResponse {
+  repeated RepoAccess accesses = 1;
+}

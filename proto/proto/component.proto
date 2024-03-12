@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package travix.protobuf.catalog;
+
+import "proto/base.proto";
+
+option go_package = "github.com/xivart/travix-catalog-api/v2/pkg/pb";
+
+message Component {
+  string alias = 1;
+  repeated string consumesApis = 2;
+  repeated string dependsOn = 3;
+  string id = 4;
+  string lifecycle = 5;
+  string owner = 6;
+  repeated string providesApis = 7;
+  repeated Reference references = 8;
+  repeated string subcomponentOf = 9;
+  string system = 10;
+  string type = 11;
+  string description = 12;
+  string name = 13;
+  string source = 14;
+}

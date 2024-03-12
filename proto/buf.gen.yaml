@@ -1,12 +1,23 @@
 version: v1beta1
 plugins:
-  - name: js
-    out: ../src/proto
-    opt: import_style=commonjs,binary
-  - name: grpc
-    out: ../src/proto
-    opt: grpc_js
-    path: grpc_tools_node_protoc_plugin
+#  - name: js
+#    out: ../src/proto
+#    opt: import_style=commonjs,binary
+#  - name: grpc
+#    out: ../src/proto
+#    opt: grpc_js
+#    path: grpc_tools_node_protoc_plugin
+#  - name: ts
+#    out: ../src/proto
+#    opt: grpc_js
   - name: ts
-    out: ../src/proto
-    opt: grpc_js
+    out: ../src/compiled_proto
+    strategy: all
+    opt:
+      - outputServices=nice-grpc
+      - outputServices=generic-definitions
+      - esModuleInterop=true
+      - importSuffix=.js
+      - useExactTypes=false
+    path: ../node_modules/ts-proto/protoc-gen-ts_proto
+

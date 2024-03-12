@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package travix.protobuf.catalog;
+
+import "google/api/annotations.proto";
+import "gotf.proto";
+import "proto/base.proto";
+
+option go_package = "github.com/xivart/travix-catalog-api/v2/pkg/pb";
+
+message User {
+  option (gotf.datasource) = {client: "UserServiceClient"};
+  string description = 1;
+  string displayName = 2;
+  string email = 3 [(gotf.attribute) = {must_be: Optional}]; // at most one from email, name, gitHubLogin must be set
+  string gitHubLogin = 4 [(gotf.attribute) = {name: "github_login", must_be: Optional}]; // at most one from gitHubLogin, email, name must be set
+  repeated string gitHubOrgs = 5 [(gotf.attribute) = {name: "github_orgs"}];
+  string gitHubRole = 6 [(gotf.attribute) = {name: "github_role"}];
+  string id = 7;
+  string name = 8 [(gotf.attribute) = {must_be: Optional}]; // at most one from name, email, gitHubLogin must be set
+  repeated Reference references = 9;
+  string source = 10;
+  string travixLocation = 11;
+  string travixRole = 12;
+  repeated string travixTechnologies = 13;
+  bool travixExternal = 14;
+  bool travixProductOwner = 15;
+}
+
+message Users {
+  option (gotf.datasource) = {client: "UserServiceClient"};
+  string group = 1 [(gotf.attribute) = {must_be: Optional}]; // one of group, gitHubOrg, gitHubRole must be set
+  string gitHubOrg = 2 [(gotf.attribute) = {must_be: Optional, name: "github_org"}]; // one of gitHubOrg, groud, gitHubRole must be set
+  string gitHubRole = 3 [(gotf.attribute) = {must_be: Optional, name: "github_role"}]; // one of githubRole, gitHubOrg, group must be set
+  repeated User users = 4;
+  string id = 5; // required for terraform ACC tests
+}
+
+service UserService {
+  rpc GetUser(GetUserRequest) returns (User) {
+    option (google.api.http) = {
+      get: "/users/{id}"
+      additional_bindings {get: "/users/_search"}
+    };
+  }
+  rpc ListUsers(ListUserRequest) returns (ListUserResponse) {
+    option (google.api.http) = {get: "/users"};
+  }
+}
+
+message GetUserRequest {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  string gitHubLogin = 4;
+}
+
+message ListUserRequest {
+  string group = 1;
+  string gitHubOrg = 2;
+  string gitHubRole = 3;
+}
+
+message ListUserResponse {
+  repeated User users = 1;
+}

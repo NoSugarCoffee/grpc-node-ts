@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package travix.protobuf.catalog;
+
+import "google/api/annotations.proto";
+import "proto/base.proto";
+import "gotf.proto";
+
+option go_package = "github.com/xivart/travix-catalog-api/v2/pkg/pb";
+
+message Environment {
+  string description = 1;
+  string id = 2;
+  string name = 3;
+  string protection = 4;
+  repeated Reference references = 5 [(gotf.attribute) = {skip: true}];
+  string source = 6;
+  string target = 7;
+}
+
+message Environments {
+  option (gotf.datasource) = {
+    client: "EnvironmentServiceClient"
+  };
+  repeated Environment environments = 1;
+  string id = 2; // required for terraform ACC tests
+  string repository = 3 [(gotf.attribute) = {must_be: Optional}];
+}
+
+service EnvironmentService {
+  rpc GetEnvironment(GetEnvironmentRequest) returns (Environment) {
+    option (google.api.http) = {
+      get: "/environments/{id}"
+    };
+  }
+  rpc ListEnvironment(ListEnvironmentRequest) returns (ListEnvironmentResponse) {
+    option (google.api.http) = {
+      get: "/environments"
+    };
+  }
+}
+
+message GetEnvironmentRequest {
+  string id = 1;
+}
+
+message ListEnvironmentRequest {
+  optional string repository = 1;
+}
+
+message ListEnvironmentResponse {
+  repeated Environment environments = 1;
+}

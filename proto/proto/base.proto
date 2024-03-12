@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package travix.protobuf.catalog;
+
+import "google/protobuf/descriptor.proto";
+import "gotf.proto";
+
+option go_package = "github.com/xivart/travix-catalog-api/v2/pkg/pb";
+
+message Reference {
+  string entity = 1;
+  string id = 2;
+}
+
+message CatalogProviderModel {
+  option (gotf.provider) = {
+    name: "catalog"
+    description: "Travix catalog terraform provider"
+    provider_package: "github.com/xivart/travix-catalog-api/v2/pkg/providerpb"
+//    exec_package: "github.com/xivart/travix-catalog-api/v2/pkg/exec"
+  };
+  string endpoint = 1 [(gotf.attribute) = {must_be: Optional}];
+  string key_id = 2 [(gotf.attribute) = {must_be: Optional}]; // can be set via CATALOG_KEY_ID env var
+  string secret_key = 3 [(gotf.attribute) = {must_be: Optional}]; // can be set via CATALOG_SECRET_KEY env var
+}

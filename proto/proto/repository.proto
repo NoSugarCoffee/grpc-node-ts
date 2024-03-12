@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package travix.protobuf.catalog;
+
+import "google/api/annotations.proto";
+import "proto/base.proto";
+import "gotf.proto";
+
+option go_package = "github.com/xivart/travix-catalog-api/v2/pkg/pb";
+
+message Access {
+  string resource = 1;
+  string permission = 3;
+}
+
+message Repository {
+  option (gotf.datasource) = {
+    client: "RepositoryServiceClient"
+  };
+  repeated Access access = 1;
+  string description = 2;
+  string id = 3 [(gotf.attribute) = {must_be: Optional}];
+  string name = 4 [(gotf.attribute) = {must_be: Optional}];
+  string owner = 5;
+  string visibility = 6;
+  repeated Reference references = 7 [(gotf.attribute) = {skip: true}];
+  string source = 8;
+}
+
+message Repositories {
+  option (gotf.datasource) = {
+    client: "RepositoryServiceClient"
+  };
+  string owner = 1 [(gotf.attribute) = {must_be: Optional}];
+  repeated Repository repositories = 2;
+  string id = 4; // required for terraform ACC tests
+}
+
+service RepositoryService {
+  rpc GetRepository(GetRepositoryRequest) returns (Repository) {
+    option (google.api.http) = {
+      get: "/repositories/{id}"
+      additional_bindings {
+        get: "/repositories/name/{name}"
+      }
+    };
+  }
+  rpc ListRepositories(ListRepositoryRequest) returns (ListRepositoryResponse) {
+    option (google.api.http) = {
+      get: "/repositories"
+    };
+  }
+}
+
+message GetRepositoryRequest {
+  string id = 1;
+  string name = 2;
+}
+
+message ListRepositoryRequest {
+  string owner = 1;
+}
+
+message ListRepositoryResponse {
+  repeated Repository repositories = 1;
+}

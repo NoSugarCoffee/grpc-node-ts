@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package travix.protobuf.catalog;
+
+import "google/api/annotations.proto";
+import "proto/base.proto";
+import "gotf.proto";
+
+option go_package = "github.com/xivart/travix-catalog-api/v2/pkg/pb";
+
+message Group {
+  option (gotf.datasource) = {
+    client: "GroupServiceClient"
+  };
+  string description = 1;
+  string displayName = 2;
+  string email = 3;
+  repeated string gitHubMaintainers = 4 [(gotf.attribute) = {name: "github_maintainers"}];
+  repeated string gitHubOrgs = 5 [(gotf.attribute) = {name: "github_orgs"}];
+  string gitHubSlug = 6 [(gotf.attribute) = {name: "github_slug"}];
+  repeated string gitHubUsers = 7 [(gotf.attribute) = {name: "github_users"}];
+  string id = 8;
+  repeated string members = 9;
+  string name = 10 [(gotf.attribute) = {must_be: Required}];
+  string parent = 11;
+  repeated Reference references = 12 [(gotf.attribute) = {skip: true}];
+  string slackChannel = 13;
+  repeated string children = 14;
+  string type = 15;
+  string source = 16;
+  // only used and required for terraform block
+  string gitHubOrg = 17 [(gotf.attribute) = {must_be: Required; name: "github_org"}];
+  repeated string gitHubExternalUsers = 18 [(gotf.attribute) = {name: "github_external_users"}];
+  repeated string gitHubProductOwners = 19 [(gotf.attribute) = {name: "github_product_owners"}];
+}
+
+message Groups {
+  option (gotf.datasource) = {
+    client: "GroupServiceClient"
+  };
+  string parent = 1 [(gotf.attribute) = {must_be: Optional}];
+  string type = 2 [(gotf.attribute) = {must_be: Optional}];
+  repeated Group groups = 3;
+  string id = 4; // required for terraform ACC tests
+  string gitHubOrg = 5 [(gotf.attribute) = {must_be: Required; name: "github_org"}];
+}
+
+service GroupService {
+  rpc GetGroup(GetGroupRequest) returns (Group) {
+    option (google.api.http) = {
+      get: "/groups/{id}"
+      additional_bindings {
+        get: "/groups/name/{name}"
+      }
+    };
+  }
+  rpc ListGroups(ListGroupsRequest) returns (ListGroupsResponse) {
+    option (google.api.http) = {
+      get: "/groups"
+    };
+  }
+}
+
+message GetGroupRequest {
+  string id = 1;
+  string name = 2;
+  optional string gitHubOrg = 3;
+}
+
+message ListGroupsRequest {
+  string parent = 1;
+  string type = 2;
+  optional string gitHubOrg = 3;
+}
+
+message ListGroupsResponse {
+  repeated Group groups = 1;
+}

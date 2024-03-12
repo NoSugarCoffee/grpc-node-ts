@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package travix.protobuf.catalog;
+
+import "google/api/annotations.proto";
+import "proto/base.proto";
+import "gotf.proto";
+
+option go_package = "github.com/xivart/travix-catalog-api/v2/pkg/pb";
+
+message Resource {
+  option (gotf.datasource) = {
+    client: "ResourceServiceClient"
+  };
+  string alias = 1;
+  string description = 2;
+  string environment = 3;
+  string id = 4;
+  string name = 5 [(gotf.attribute) = {must_be: Optional}];
+  string owner = 6;
+  string provider = 7 [(gotf.attribute) = {name: "resource_provider"}];
+  repeated Reference references = 8 [(gotf.attribute) = {skip: true}];
+  string source = 9;
+  string type = 10;
+}
+
+message Resources {
+  option (gotf.datasource) = {
+    client: "ResourceServiceClient"
+  };
+  string environment = 1 [(gotf.attribute) = {must_be: Optional}]; // one of environment, provider or type is required
+  string provider = 2 [(gotf.attribute) = {must_be: Optional, name: "resource_provider"}]; // one of provider, environment or type is required
+  string type = 3 [(gotf.attribute) = {must_be: Optional}]; // one of type, environment or provider is required
+  repeated Resource resources = 4;
+  string id = 5; // required for terraform ACC tests
+}
+
+service ResourceService {
+  rpc GetResource(GetResourceRequest) returns (Resource) {
+    option (google.api.http) = {
+      get: "/resources/{id}"
+      additional_bindings {
+        get: "/resources/name/{name}"
+      }
+    };
+  }
+  rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse) {
+    option (google.api.http) = {
+      get: "/resources"
+    };
+  }
+}
+
+message GetResourceRequest {
+  string id = 1;
+  string name = 2;
+}
+
+message ListResourcesRequest {
+  string environment = 1;
+  string provider = 2;
+  string type = 3;
+}
+
+message ListResourcesResponse {
+  repeated Resource resources = 1;
+}

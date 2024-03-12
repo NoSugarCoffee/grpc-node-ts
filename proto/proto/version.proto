@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package travix.protobuf.catalog;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/xivart/travix-catalog-api/v2/pkg/pb";
+
+message Version {
+  string version = 1;
+  string commit = 2;
+  string catalog = 3;
+}
+
+service VersionService {
+  rpc GetVersion(GetVersionRequest) returns (Version) {
+    option (google.api.http) = {
+      get: "/version"
+    };
+  }
+}
+
+message GetVersionRequest {
+}
